@@ -57,7 +57,7 @@ local builtin_modules = {
     module_path = "nvim-treesitter.incremental_selection",
     enable = false,
     keymaps = {
-      init_selection = "gnn",
+      init_selection = "gnn", -- set to `false` to disable one of the mappings
       node_incremental = "grn",
       scope_incremental = "grc",
       node_decremental = "grm",
@@ -127,8 +127,8 @@ local function enable_mod_conf_autocmd(mod)
 
   api.nvim_create_autocmd("FileType", {
     group = api.nvim_create_augroup("NvimTreesitter-" .. mod, {}),
-    callback = function()
-      require("nvim-treesitter.configs").reattach_module(mod)
+    callback = function(args)
+      require("nvim-treesitter.configs").reattach_module(mod, args.buf)
     end,
     desc = "Reattach module",
   })
@@ -232,7 +232,7 @@ end
 
 ---Recurses through all modules including submodules
 ---@param accumulator function called for each module
----@param root {[string]: TSModule} root configuration table to start at
+---@param root {[string]: TSModule}|nil root configuration table to start at
 ---@param path string|nil prefix path
 local function recurse_modules(accumulator, root, path)
   root = root or config.modules
@@ -529,7 +529,7 @@ function M.reattach_module(mod_name, bufnr, lang)
 end
 
 ---Gets available modules
----@param root {[string]:TSModule} table to find modules
+---@param root {[string]:TSModule}|nil table to find modules
 function M.available_modules(root)
   local modules = {}
 

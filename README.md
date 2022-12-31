@@ -1,8 +1,8 @@
 <div align="center">
   <h1>nvim-treesitter</h1>
   <p>
-    <a href="https://nvim-treesitter.zulipchat.com/">
-      <img alt="Zulip Chat" src="https://img.shields.io/badge/zulip-join_chat-brightgreen.svg" />
+    <a href="https://matrix.to/#/#nvim-treesitter:matrix.org">
+      <img alt="Matrix Chat" src="https://img.shields.io/matrix/nvim-treesitter:matrix.org" />
     </a>
     <a href="https://github.com/nvim-treesitter/nvim-treesitter/actions?query=workflow%3A%22Linting+and+style+checking%22+branch%3Amaster">
       <img alt="Linting and Style" src="https://github.com/nvim-treesitter/nvim-treesitter/workflows/Linting%20and%20style%20checking/badge.svg" />
@@ -172,6 +172,7 @@ We are looking for maintainers to add more parsers and to write query files for 
 
 <!--This section of the README is automatically updated by a CI job-->
 <!--parserinfo-->
+- [x] [ada](https://github.com/briot/tree-sitter-ada) (maintained by @briot)
 - [x] [agda](https://github.com/AusCyberman/tree-sitter-agda) (maintained by @Decodetalkers)
 - [x] [arduino](https://github.com/ObserverOfTime/tree-sitter-arduino) (maintained by @ObserverOfTime)
 - [x] [astro](https://github.com/virchau13/tree-sitter-astro) (maintained by @virchau13)
@@ -295,6 +296,7 @@ We are looking for maintainers to add more parsers and to write query files for 
 - [x] [swift](https://github.com/alex-pinkus/tree-sitter-swift) (maintained by @alex-pinkus)
 - [x] [sxhkdrc](https://github.com/RaafatTurki/tree-sitter-sxhkdrc) (maintained by @RaafatTurki)
 - [x] [teal](https://github.com/euclidianAce/tree-sitter-teal) (maintained by @euclidianAce)
+- [x] [terraform](https://github.com/MichaHoffmann/tree-sitter-hcl) (maintained by @MichaHoffmann)
 - [x] [tiger](https://github.com/ambroisie/tree-sitter-tiger) (maintained by @ambroisie)
 - [x] [tlaplus](https://github.com/tlaplus-community/tree-sitter-tlaplus) (maintained by @ahelwer, @susliko)
 - [x] [todotxt](https://github.com/arnarg/tree-sitter-todotxt.git) (experimental, maintained by @arnarg)
@@ -366,7 +368,7 @@ require'nvim-treesitter.configs'.setup {
   incremental_selection = {
     enable = true,
     keymaps = {
-      init_selection = "gnn",
+      init_selection = "gnn", -- set to `false` to disable one of the mappings
       node_incremental = "grn",
       scope_incremental = "grc",
       node_decremental = "grm",

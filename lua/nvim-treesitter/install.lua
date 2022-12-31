@@ -43,6 +43,29 @@ local function get_job_status()
 end
 
 ---@param lang string
+---@return function
+local function reattach_if_possible_fn(lang, error_on_fail)
+  return function()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if parsers.get_buf_lang(buf) == lang then
+        vim._ts_remove_language(lang)
+        local ok, err = pcall(vim.treesitter.language.require_language, lang)
+        if not ok and error_on_fail then
+          vim.notify("Could not load parser for " .. lang .. ": " .. vim.inspect(err))
+        end
+        for _, mod in ipairs(require("nvim-treesitter.configs").available_modules()) do
+          if ok then
+            require("nvim-treesitter.configs").reattach_module(mod, buf, lang)
+          else
+            require("nvim-treesitter.configs").detach_module(mod, buf)
+          end
+        end
+      end
+    end
+  end
+end
+
+---@param lang string
 ---@param validate boolean|nil
 ---@return InstallInfo
 local function get_parser_install_info(lang, validate)
@@ -95,6 +118,17 @@ local function get_installed_revision(lang)
   end
 end
 
+-- Clean path for use in a prefix comparison
+-- @param input string
+-- @return string
+local function clean_path(input)
+  local pth = vim.fn.fnamemodify(input, ":p")
+  if fn.has "win32" == 1 then
+    pth = pth:gsub("/", "\\")
+  end
+  return pth
+end
+
 ---Checks if parser is installed with nvim-treesitter
 ---@param lang string
 ---@return boolean
@@ -104,9 +138,9 @@ local function is_installed(lang)
   if not install_dir then
     return false
   end
-  install_dir = vim.fn.fnamemodify(install_dir, ":p")
+  install_dir = clean_path(install_dir)
   for _, path in ipairs(matched_parsers) do
-    local abspath = vim.fn.fnamemodify(path, ":p")
+    local abspath = clean_path(path)
     if vim.startswith(abspath, install_dir) then
       return true
     end
@@ -374,15 +408,7 @@ local function run_install(cache_folder, install_folder, lang, repo, with_sync, 
       end,
     },
     { -- auto-attach modules after installation
-      cmd = function()
-        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-          if parsers.get_buf_lang(buf) == lang then
-            for _, mod in ipairs(require("nvim-treesitter.configs").available_modules()) do
-              require("nvim-treesitter.configs").reattach_module(mod, buf)
-            end
-          end
-        end
-      end,
+      cmd = reattach_if_possible_fn(lang, true),
     },
   })
   if not from_local_path then
@@ -581,6 +607,9 @@ function M.uninstall(...)
                 )
               end
             end,
+          },
+          { -- auto-reattach or detach modules after uninstallation
+            cmd = reattach_if_possible_fn(lang, false),
           },
         }
         M.iter_cmd(command_list, 1, lang, "Treesitter parser for " .. lang .. " has been uninstalled")

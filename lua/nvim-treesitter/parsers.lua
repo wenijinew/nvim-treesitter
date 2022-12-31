@@ -8,7 +8,6 @@ local filetype_to_parsername = {
   PKGBUILD = "bash",
   html_tags = "html",
   ["typescript.tsx"] = "tsx",
-  terraform = "hcl",
   ["html.handlebars"] = "glimmer",
   systemverilog = "verilog",
   cls = "latex",
@@ -59,6 +58,16 @@ local list = setmetatable({}, {
     filetype_to_parsername[parserconfig.filetype or parsername] = parsername
   end,
 })
+
+list.ada = {
+  install_info = {
+    url = "https://github.com/briot/tree-sitter-ada",
+    branch = "master",
+    files = { "src/parser.c" },
+  },
+  filetype = "ada",
+  maintainers = { "@briot" },
+}
 
 list.agda = {
   install_info = {
@@ -412,11 +421,11 @@ list.scss = {
 
 list.erlang = {
   install_info = {
-    url = "https://github.com/AbstractMachinesLab/tree-sitter-erlang",
+    url = "https://github.com/WhatsApp/tree-sitter-erlang",
     files = { "src/parser.c" },
     branch = "main",
   },
-  maintainers = { "@ostera" },
+  maintainers = { "@filmor" },
 }
 
 list.elixir = {
@@ -606,6 +615,17 @@ list.hcl = {
   },
   maintainers = { "@MichaHoffmann" },
   filetype = "hcl",
+}
+
+list.terraform = {
+  install_info = {
+    url = "https://github.com/MichaHoffmann/tree-sitter-hcl",
+    files = { "src/parser.c", "src/scanner.cc" },
+    branch = "main",
+    location = "dialects/terraform",
+  },
+  maintainers = { "@MichaHoffmann" },
+  filetype = "terraform",
 }
 
 list.markdown = {
@@ -1163,6 +1183,15 @@ list.wgsl = {
   filetype = "wgsl",
 }
 
+list.wgsl_bevy = {
+  install_info = {
+    url = "https://github.com/theHamsta/tree-sitter-wgsl-bevy",
+    files = { "src/parser.c" },
+    generate_requires_npm = true,
+  },
+  maintainers = { "@theHamsta" },
+}
+
 list.m68k = {
   install_info = {
     url = "https://github.com/grahambates/tree-sitter-m68k",
@@ -1204,6 +1233,19 @@ list.tiger = {
   },
   filetype = "tiger",
   maintainers = { "@ambroisie" },
+}
+
+list.t32 = {
+  install_info = {
+    url = "https://codeberg.org/xasc/tree-sitter-t32",
+    files = { "src/parser.c", "src/scanner.c" },
+    branch = "main",
+    revision = "675cd7de4eb80f2faa1e6d3bc9ee195fa9ef9790",
+    generate_requires_npm = false,
+    requires_generate_from_grammar = false,
+  },
+  filetype = "t32",
+  maintainers = { "@xasc" },
 }
 
 list.sxhkdrc = {
@@ -1354,7 +1396,7 @@ function M.ft_to_lang(ft)
   if result then
     return result
   else
-    ft = vim.split(ft, ".", true)[1]
+    ft = vim.split(ft, ".", { plain = true })[1]
     return filetype_to_parsername[ft] or ft
   end
 end
